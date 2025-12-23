@@ -11,10 +11,13 @@ export default function Contact() {
     setError("");
 
     try {
-      await sendContactEmail(formData);
+      // Get client IP from Vercel headers
+      const ip = (formData.get("x-forwarded-for") as string) || "unknown";
+
+      await sendContactEmail(formData, ip);
       setSubmitted(true);
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     }
   }
 
@@ -24,7 +27,6 @@ export default function Contact() {
         <h2 className="text-3xl font-semibold mb-4 text-center">
           Get in Touch
         </h2>
-
         <p className="text-gray-400 text-center mb-10">
           Booking inquiries, collaborations, or questions.
         </p>
@@ -36,13 +38,19 @@ export default function Contact() {
         ) : (
           <form action={handleSubmit} className="space-y-6">
             <input
+              type="text"
+              name="website"
+              className="hidden"
+              autoComplete="off"
+            />
+
+            <input
               name="name"
               type="text"
               placeholder="Name"
               required
               className="w-full bg-black border border-gray-700 px-4 py-3 rounded-md focus:outline-none focus:border-white transition"
             />
-
             <input
               name="email"
               type="email"
@@ -50,7 +58,6 @@ export default function Contact() {
               required
               className="w-full bg-black border border-gray-700 px-4 py-3 rounded-md focus:outline-none focus:border-white transition"
             />
-
             <textarea
               name="message"
               placeholder="Tell us a bit about what you're working on"

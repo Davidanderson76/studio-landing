@@ -1,10 +1,20 @@
 "use server";
 
 import { Resend } from "resend";
+import { canSubmit } from "../server/utils/rateLimiter";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendContactEmail(formData: FormData) {
+export async function sendContactEmail(formData: FormData, ip: string) {
+  // Honeypot field (bots often fill this)
+  const honeypot = formData.get("website") as string;
+  if (honeypot) return; // silently ignore spam
+
+  // Rate limiting per IP
+  if (!canSubmit(ip)) {
+    throw new Error("Too many submissions, please try again later.");
+  }
+
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const message = formData.get("message") as string;

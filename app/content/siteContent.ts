@@ -1,7 +1,7 @@
 export const siteContent = {
   hero: {
-    title: "Studio Space",
-    subtitle: "Professional recording environment — coming soon",
+    title: "THE BAG",
+    subtitle: "Professional recording environment — Coming Soon",
     cta: "Get in touch",
   },
   about: {
